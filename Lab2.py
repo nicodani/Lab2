@@ -1,9 +1,8 @@
 from SimpleCV import Camera, Display, Image, ImageClass ## Cargamos los paquetes de SimpleCV en Python
 import cv2 ## Se importan comandos de openCV para cargar imagenes que luego se usaran para determinar el histograma
 import matplotlib.pyplot as plt ## Se importan comandos de la libreria matplotlib para graficar el histograma
-import numpy as np
-from sklearn.cluster import KMeans
-import utils
+from sklearn.cluster import KMeans ##importamos paquetes de sklearn para usar kmean
+import utils ##importamos las funciones creadas a partir de la guia para utilizarlas en el desarrollo del algoritmo kmeans
 img=Image("PapelBlanco.jpg") ##Cargamos archivo de imagen
 imggs=img.grayscale() ##Llevamos la imagen a escala de grises
 imggs.save("PapelBlanco_gs.jpg") ## Guardamos archivo de imagen en escala de grises
