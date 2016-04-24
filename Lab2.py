@@ -1,6 +1,7 @@
 from SimpleCV import Camera, Display, Image, ImageClass ## Cargamos los paquetes de SimpleCV en Python
 import cv2 ## Se importan comandos de openCV para cargar imagenes que luego se usaran para determinar el histograma
 import matplotlib.pyplot as plt ## Se importan comandos de la libreria matplotlib para graficar el histograma
+import numpy as np
 from sklearn.cluster import KMeans ##importamos paquetes de sklearn para usar kmean
 import utils ##importamos las funciones creadas a partir de la guia para utilizarlas en el desarrollo del algoritmo kmeans
 img=Image("PapelBlanco.jpg") ##Cargamos archivo de imagen
@@ -187,40 +188,123 @@ bpapelcol=b33rr+b34rr+b35rr ## se contruye el papel de color en escala de grises
 bpapelcol.save("SegmentacionPapCol.jpg")
 
 ## Algoritmo de segmentacion kmeans para papel blanco
-image=cv2.imread("PapelBlanco.jpg") ##cargamos imagen original
-image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB) ##cambiamos el formato del color de la imagen de BGR a RGB
-image=image.reshape((image.shape[0]*image.shape[1],3))## ajustamos la imagen a una lista de pixeles
-clt=KMeans(n_clusters=2) ##aplicamos Kmeans con 2 clusters para ver blanco y el color del texto
-clt.fit(image)
-hist=utils.centroid_histogram(clt) ## utilizamos funciones creadas mediante codigo de la guia para obtener histograma
-                                   ## y obtener figura de clases entregadas por kmeans
-bar=utils.plot_colors(hist,clt.cluster_centers_)
-plt.figure()
-plt.axis("off")
-plt.imshow(bar)  ## mostramos imagen con las clases de kmeans
+##image=cv2.imread("PapelBlanco.jpg") ##cargamos imagen original
+##image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB) ##cambiamos el formato del color de la imagen de BGR a RGB
+##image=image.reshape((image.shape[0]*image.shape[1],3))## ajustamos la imagen a una lista de pixeles
+##clt=KMeans(n_clusters=2) ##aplicamos Kmeans con 2 clusters para ver blanco y el color del texto
+##clt.fit(image)
+##hist=utils.centroid_histogram(clt) ## utilizamos funciones creadas mediante codigo de la guia para obtener histograma
+##                                   ## y obtener figura de clases entregadas por kmeans
+##bar=utils.plot_colors(hist,clt.cluster_centers_)
+##plt.figure()
+##plt.axis("off")
+##plt.imshow(bar)  ## mostramos imagen con las clases de kmeans
+##
+####repetimos lo anterior para el papel cuadriculado y papel color
+####Papel cuadriculado:
+##image2=cv2.imread("PapelCuadr.jpg")
+##image2=cv2.cvtColor(image2,cv2.COLOR_BGR2RGB)
+##image2=image2.reshape((image2.shape[0]*image2.shape[1],3))
+##clt2=KMeans(n_clusters=3)
+##clt2.fit(image2)
+##hist2=utils.centroid_histogram(clt2)
+##bar2=utils.plot_colors(hist2,clt2.cluster_centers_)
+##plt.figure()
+##plt.axis("off")
+##plt.imshow(bar2)
+####Papel de Color:
+##
+##image3=cv2.imread("PapelColor.jpg")
+##image3=cv2.cvtColor(image3,cv2.COLOR_BGR2RGB)
+##image3=image3.reshape((image3.shape[0]*image3.shape[1],3))
+##clt3=KMeans(n_clusters=3)
+##clt3.fit(image3)
+##hist3=utils.centroid_histogram(clt3)
+##bar3=utils.plot_colors(hist3,clt3.cluster_centers_)
+##plt.figure()
+##plt.axis("off")
+##plt.imshow(bar3)
+##plt.show()
 
-##repetimos lo anterior para el papel cuadriculado y papel color
-##Papel cuadriculado:
-image2=cv2.imread("PapelCuadr.jpg")
-image2=cv2.cvtColor(image2,cv2.COLOR_BGR2RGB)
-image2=image2.reshape((image2.shape[0]*image2.shape[1],3))
-clt2=KMeans(n_clusters=3)
-clt2.fit(image2)
-hist2=utils.centroid_histogram(clt2)
-bar2=utils.plot_colors(hist2,clt2.cluster_centers_)
+image=cv2.imread("PapelBlanco.jpg")
+
+(h,w)=image.shape[:2]
+
+image=cv2.cvtColor(image,cv2.COLOR_BGR2LAB)
+image=image.reshape((image.shape[0]*image.shape[1],3))
+clt=KMeans(n_clusters=2)
+labels=clt.fit_predict(image)
+quant=clt.cluster_centers_.astype("uint8")[labels]
+
+quant=quant.reshape((h,w,3))
+image=image.reshape((h,w,3))
+
+quant=cv2.cvtColor(quant,cv2.COLOR_LAB2BGR)
+image=cv2.cvtColor(image,cv2.COLOR_LAB2BGR)
 plt.figure()
-plt.axis("off")
-plt.imshow(bar2)
-##Papel de Color:
+plt.imshow(quant)
+
+
+image2=cv2.imread("PapelCuadr.jpg")
+
+(h2,w2)=image2.shape[:2]
+
+image2=cv2.cvtColor(image2,cv2.COLOR_BGR2LAB)
+image2=image2.reshape((image2.shape[0]*image2.shape[1],3))
+clt2=KMeans(n_clusters=8)
+labels2=clt2.fit_predict(image2)
+quant2=clt2.cluster_centers_.astype("uint8")[labels2]
+
+quant2=quant2.reshape((h2,w2,3))
+image2=image2.reshape((h2,w2,3))
+
+quant2=cv2.cvtColor(quant2,cv2.COLOR_LAB2BGR)
+image2=cv2.cvtColor(image2,cv2.COLOR_LAB2BGR)
+plt.figure()
+plt.imshow(quant2)
 
 image3=cv2.imread("PapelColor.jpg")
-image3=cv2.cvtColor(image3,cv2.COLOR_BGR2RGB)
+
+(h3,w3)=image3.shape[:2]
+
+image3=cv2.cvtColor(image3,cv2.COLOR_BGR2LAB)
 image3=image3.reshape((image3.shape[0]*image3.shape[1],3))
 clt3=KMeans(n_clusters=3)
-clt3.fit(image3)
-hist3=utils.centroid_histogram(clt3)
-bar3=utils.plot_colors(hist3,clt3.cluster_centers_)
+labels3=clt3.fit_predict(image3)
+quant3=clt3.cluster_centers_.astype("uint8")[labels3]
+
+quant3=quant3.reshape((h3,w3,3))
+image3=image3.reshape((h3,w3,3))
+
+quant3=cv2.cvtColor(quant3,cv2.COLOR_LAB2BGR)
+image3=cv2.cvtColor(image3,cv2.COLOR_RGB2BGR)
+
+
 plt.figure()
-plt.axis("off")
-plt.imshow(bar3)
+plt.imshow(quant3)
+##2
+image4=cv2.imread("PapelColor.jpg")
+
+(h4,w4)=image4.shape[:2]
+
+image4=cv2.cvtColor(image4,cv2.COLOR_BGR2LAB)
+image4=image4.reshape((image4.shape[0]*image4.shape[1],3))
+clt4=KMeans(n_clusters=2)
+labels4=clt4.fit_predict(image4)
+quant4=clt4.cluster_centers_.astype("uint8")[labels4]
+
+
+quant4=quant4.reshape((h4,w4,3))
+
+
+quant4=cv2.cvtColor(quant4,cv2.COLOR_LAB2BGR)
+
+plt.figure()
+plt.imshow(quant4)
+
+
+final=(quant4-quant3)
+
+plt.figure()
+plt.imshow(final)
 plt.show()
